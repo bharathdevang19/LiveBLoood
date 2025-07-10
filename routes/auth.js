@@ -78,14 +78,21 @@ router.get('/login', (req, res) => {
 });
 
 // Login Handler - POST
-router.post('/login',
-  passport.authenticate('local', {
-    successRedirect: '/dashboard',
-    failureRedirect: '/login',
-    failureFlash: 'invalid credentials',
-    successFlash: 'You are now logged in.'
-  })
-);
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) return next(err);
+    if (!user) {
+      req.flash('error_msg', info.message || 'Invalid credentials');
+      return res.redirect('/login');
+    }
+    req.logIn(user, function(err) {
+      if (err) return next(err);
+      req.flash('success_msg', 'You are now logged in.');
+      return res.redirect('/dashboard');
+    });
+  })(req, res, next);
+});
+
 
 // Google OAuth login
 router.get('/auth/google',

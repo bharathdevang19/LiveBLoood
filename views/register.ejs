@@ -1,0 +1,60 @@
+<%- include('./partials/header') %>
+
+<div class="form-wrapper">
+  <!-- Flash Messages -->
+  <% if (error_msg && error_msg.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= error_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (success_msg && success_msg.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= success_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <!-- Registration Form -->
+  <div class="card border-danger shadow mb-3">
+    <div class="card-body">
+      <h4 class="text-center text-danger mb-4">Register for Blood Donation</h4>
+      <form action="/register" method="POST">
+        <div class="mb-3">
+          <label for="email" class="form-label text-danger">Email</label>
+          <input type="email" class="form-control border-danger" name="email" required>
+        </div>
+        <div class="mb-3">
+          <label for="username" class="form-label text-danger">Username</label>
+          <input type="text" class="form-control border-danger" name="username" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label text-danger">Password</label>
+          <input type="password" class="form-control border-danger" name="password" required>
+        </div>
+        <div class="mb-3">
+          <label for="confirmpassword" class="form-label text-danger">Confirm Password</label>
+          <input type="password" class="form-control border-danger" name="confirmpassword" required>
+        </div>
+        <div class="text-end">
+          <small>
+            <a href="/login" class="text-danger text-decoration-none">Already have an account? Login</a>
+          </small>
+        </div>
+        <button type="submit" class="btn btn-danger mt-3 w-100">Register</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Google Signup -->
+  <div class="card border-danger shadow">
+    <div class="card-body text-center">
+      <a class="btn btn-outline-danger w-100" href="/auth/google">
+        <i class="fab fa-google me-2"></i> Sign Up with Google
+      </a>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

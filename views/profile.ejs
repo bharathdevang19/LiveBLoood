@@ -1,0 +1,61 @@
+<%- include('./partials/header') %>
+
+<div class="form-wrapper">
+  <% if (success_msg) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= success_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (error_msg) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= error_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="card border-danger shadow">
+    <div class="card-body">
+      <h4 class="text-center text-danger mb-4">Your Profile</h4>
+      <form action="/update-profile" method="POST">
+        <div class="mb-3">
+          <label class="form-label text-danger">Full Name</label>
+          <input type="text" class="form-control border-danger" name="fullname" value="<%= user.fullname || '' %>" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">Blood Group</label>
+          <select class="form-select border-danger" name="bloodgroup" required>
+            <option disabled selected value="">Select Blood Group</option>
+            <% ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].forEach(bg => { %>
+              <option value="<%= bg %>" <%= user.bloodgroup === bg ? 'selected' : '' %>><%= bg %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">Phone Number</label>
+          <input type="text" class="form-control border-danger" name="phone" value="<%= user.phone || '' %>" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">City</label>
+          <input type="text" class="form-control border-danger" name="city" value="<%= user.city || '' %>" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">Availability</label>
+          <select class="form-select border-danger" name="available">
+            <option value="yes" <%= user.available === 'yes' ? 'selected' : '' %>>Available</option>
+            <option value="no" <%= user.available === 'no' ? 'selected' : '' %>>Not Available</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-danger w-100 mt-2">Update Profile</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

@@ -1,0 +1,52 @@
+<%- include('./partials/header') %>
+
+<div class="form-wrapper">
+  <!-- Flash Messages -->
+  <% if (error_msg && error_msg.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= error_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (success_msg && success_msg.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= success_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <!-- Login Form -->
+  <div class="card border-danger shadow mb-3">
+    <div class="card-body">
+      <h4 class="text-center text-danger mb-4">Login to Your Account</h4>
+      <form action="/login" method="POST">
+        <div class="mb-3">
+          <label for="email" class="form-label text-danger">Email</label>
+          <input type="email" class="form-control border-danger" name="email" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label text-danger">Password</label>
+          <input type="password" class="form-control border-danger" name="password" required>
+        </div>
+        <div class="text-end">
+          <small>
+            <a href="/register" class="text-danger text-decoration-none">Don't have an account? Register</a>
+          </small>
+        </div>
+        <button type="submit" class="btn btn-danger mt-3 w-100">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Google Login -->
+  <div class="card border-danger shadow">
+    <div class="card-body text-center">
+      <a class="btn btn-outline-danger w-100" href="/auth/google">
+        <i class="fab fa-google me-2"></i> Login with Google
+      </a>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

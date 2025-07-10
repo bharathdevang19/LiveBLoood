@@ -1,0 +1,123 @@
+<%- include('./partials/header') %>
+
+<div class="container mt-4">
+  <div class="card border-danger shadow">
+    <div class="card-body">
+      <h4 class="text-center text-danger mb-4">Find Blood Donors Near You</h4>
+
+      <!-- Search Form -->
+      <form id="searchForm" method="GET" action="/search">
+        <div class="row g-3 align-items-center mb-3">
+          <div class="col-md-6">
+            <label for="bloodGroup" class="form-label text-danger">Select Blood Group</label>
+            <select name="bloodGroup" id="bloodGroup" class="form-select border-danger" required>
+              <option value="" disabled selected>-- Choose Blood Group --</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-danger">Search Radius (km)</label>
+            <input type="number" name="radius" class="form-control border-danger" value="10" min="1" required>
+          </div>
+          <div class="col-md-2 d-grid mt-4">
+            <button type="submit" class="btn btn-danger">Search</button>
+          </div>
+        </div>
+        <input type="hidden" name="latitude" id="latitude">
+        <input type="hidden" name="longitude" id="longitude">
+      </form>
+    </div>
+  </div>
+
+  <!-- Display Map if coordinates exist -->
+  <% if (typeof latitude !== 'undefined' && typeof longitude !== 'undefined' && latitude && longitude) { %>
+    <div class="mt-4">
+      <div id="map" style="height: 400px;" class="border border-danger rounded"></div>
+    </div>
+
+    <!-- Leaflet CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const map = L.map('map').setView([<%= latitude %>, <%= longitude %>], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Marker for user's current location
+        L.marker([<%= latitude %>, <%= longitude %>], {
+          icon: L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30]
+          })
+        }).addTo(map).bindPopup("You are here").openPopup();
+
+        // Donors data
+        const donors = <%- JSON.stringify(donors || []) %>;
+        const currentUserId = <%- user && user.id ? JSON.stringify(user.id.toString()) : 'null' %>;
+
+        if (donors.length === 0) {
+          L.popup()
+            .setLatLng([<%= latitude %>, <%= longitude %>])
+            .setContent("No donors found in this radius.")
+            .openOn(map);
+        }
+
+        donors.forEach(donor => {
+          if (donor.latitude && donor.longitude) {
+            const isCurrentUser = donor.user_id && donor.user_id.toString() === currentUserId;
+            const iconUrl = isCurrentUser
+              ? 'https://cdn-icons-png.flaticon.com/512/149/149060.png' // icon for current user
+              : 'https://cdn-icons-png.flaticon.com/512/3448/3448334.png'; // icon for other donors
+
+            L.marker([donor.latitude, donor.longitude], {
+              icon: L.icon({
+                iconUrl,
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+              })
+            }).addTo(map).bindPopup(`
+              <strong>${donor.full_name}</strong><br>
+              Blood Group: ${donor.blood_group}<br>
+              Phone: ${donor.phone}<br>
+              City: ${donor.city}<br>
+              <a href="/chat/${donor.user_id}">Chat</a>
+            `);
+          }
+        });
+      });
+    </script>
+  <% } %>
+
+  <script>
+    // Auto-fill user location on page load
+    window.addEventListener('load', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            document.getElementById('latitude').value = pos.coords.latitude;
+            document.getElementById('longitude').value = pos.coords.longitude;
+          },
+          err => {
+            alert("Location access is required to search nearby donors.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    });
+  </script>
+</div>
+
+<%- include('./partials/footer') %>

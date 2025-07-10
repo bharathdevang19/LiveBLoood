@@ -1,0 +1,135 @@
+<%- include('./partials/header') %>
+
+<div class="form-wrapper">
+  <% if (error_msg && error_msg.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= error_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+  <% if (success_msg && success_msg.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= success_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="card border-danger shadow mb-3">
+    <div class="card-body">
+      <h4 class="text-center text-danger mb-4">Become a Donor</h4>
+
+      <form id="donorForm" action="/donor-form" method="POST">
+        <div class="mb-3">
+          <label class="form-label text-danger">Full Name</label>
+          <input type="text" class="form-control border-danger" name="full_name" value="<%= donor ? donor.full_name : user.username %>" required <%= donor ? 'readonly' : '' %>>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">Phone Number</label>
+          <input type="tel" class="form-control border-danger" name="phone_number" value="<%= donor ? donor.phone : '' %>" required <%= donor ? 'readonly' : '' %>>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">Age</label>
+          <input type="number" class="form-control border-danger" name="age" value="<%= donor ? donor.age : '' %>" required <%= donor ? 'readonly' : '' %>>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">Gender</label>
+          <select class="form-select border-danger" name="gender" required <%= donor ? 'disabled' : '' %>>
+            <option disabled <%= donor ? '' : 'selected' %>>Select Gender</option>
+            <option value="Male" <%= donor && donor.gender === 'Male' ? 'selected' : '' %>>Male</option>
+            <option value="Female" <%= donor && donor.gender === 'Female' ? 'selected' : '' %>>Female</option>
+            <option value="Other" <%= donor && donor.gender === 'Other' ? 'selected' : '' %>>Other</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">Blood Group</label>
+          <select class="form-select border-danger" name="blood_group" required <%= donor ? 'disabled' : '' %>>
+            <option disabled <%= donor ? '' : 'selected' %>>Select your blood group</option>
+            <% const groups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']; %>
+            <% groups.forEach(group => { %>
+              <option value="<%= group %>" <%= donor && donor.blood_group === group ? 'selected' : '' %>><%= group %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">City</label>
+          <input type="text" class="form-control border-danger" name="city" value="<%= donor ? donor.city : '' %>" required <%= donor ? 'readonly' : '' %>>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label text-danger">Live Location</label>
+          <input type="text" id="locationDisplay" class="form-control border-danger" readonly>
+          <input type="hidden" name="latitude" id="latitude" value="<%= donor ? donor.latitude : '' %>">
+          <input type="hidden" name="longitude" id="longitude" value="<%= donor ? donor.longitude : '' %>">
+          <div class="form-text text-danger">Location auto-updates from your device GPS.</div>
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input border-danger" type="checkbox" name="available" id="available"
+            <%= donor && donor.available ? 'checked' : '' %> <%= donor ? 'disabled' : '' %>>
+          <label class="form-check-label text-danger" for="available">Available for donation</label>
+        </div>
+
+        <button type="submit" class="btn btn-danger mt-3 w-100" id="submitBtn" <%= donor ? 'disabled' : '' %>>Submit Donor Info</button>
+
+        <% if (donor) { %>
+          <button type="button" class="btn btn-outline-danger mt-2 w-100" onclick="enableEdit()">Edit Info</button>
+        <% } %>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  function updateLocationOnce() {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          document.getElementById("latitude").value = lat;
+          document.getElementById("longitude").value = lng;
+          document.getElementById("locationDisplay").value = lat + ", " + lng;
+          socket.emit("locationUpdate", {
+            latitude: lat,
+            longitude: lng
+          });
+        },
+        err => {
+          document.getElementById("locationDisplay").value = "Unable to fetch location";
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 10000
+        }
+      );
+    } else {
+      document.getElementById("locationDisplay").value = "Geolocation not supported";
+    }
+  }
+
+  setInterval(updateLocationOnce, 10000);
+  updateLocationOnce();
+
+  function enableEdit() {
+    const form = document.getElementById('donorForm');
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+      if (input.type !== 'hidden') {
+        input.removeAttribute('readonly');
+        input.removeAttribute('disabled');
+      }
+    });
+    document.getElementById('submitBtn').disabled = false;
+  }
+</script>
+
+<%- include('./partials/footer') %>

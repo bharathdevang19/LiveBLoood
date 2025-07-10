@@ -1,0 +1,48 @@
+<%- include('./partials/header') %>
+
+<div class="container mt-5">
+  <h3 class="mb-4 text-danger"><i class="fas fa-users me-2"></i>All Donors</h3>
+
+  <div class="table-responsive shadow">
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-danger text-center">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+          <th>Blood Group</th>
+          <th>Phone</th>
+          <th>Availability</th>
+          <th>Chat</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% donors.forEach(donor => { %>
+          <tr class="text-center">
+            <td><%= donor.id %></td>
+            <td><%= donor.full_name %></td>
+            <td><%= donor.age %></td>
+            <td><%= donor.gender %></td>
+            <td><%= donor.blood_group %></td>
+            <td><%= donor.phone %></td>
+            <td>
+              <% if (donor.available) { %>
+                <span class="badge bg-success">Available</span>
+              <% } else { %>
+                <span class="badge bg-secondary">Not Available</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/chat/<%= donor.user_id %>" class="btn btn-sm btn-danger">
+                <i class="fas fa-comment-dots me-1"></i>Chat
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

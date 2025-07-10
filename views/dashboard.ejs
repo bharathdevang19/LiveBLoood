@@ -1,0 +1,130 @@
+<%- include('./partials/header') %>
+
+<!-- Dashboard Navigation Header -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/dashboard">
+      <i class="fas fa-heartbeat me-2"></i>BloodLink
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/donor-form"><i class="fas fa-edit me-1"></i>Donor Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/donor-search"><i class="fas fa-search me-1"></i>Find Donors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/chat/chat-list"><i class="fas fa-search me-1"></i>Chats</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-user-circle me-1"></i><%= user.username %>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/donor-form"><i class="fas fa-user me-2"></i>My Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="/logout">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Flash Messages -->
+<div class="container mt-4">
+  <% if (error_msg && error_msg.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= error_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  <% if (success_msg && success_msg.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= success_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <!-- Welcome Section -->
+  <div class="card border-danger shadow mb-4">
+    <div class="card-body">
+      <h4 class="mb-3 text-danger"><i class="fas fa-user-circle me-2"></i>Welcome, <%= user.username %></h4>
+      <p class="text-muted mb-2">Email: <%= user.email %></p>
+
+      <% if (donorProfile) { %>
+        <div class="alert alert-success">
+          <i class="fas fa-check-circle me-2"></i>Your donor profile is complete.
+        </div>
+      <% } else { %>
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-circle me-2"></i>Please complete your donor profile to be discoverable.
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Quick Actions and Stats -->
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card border-danger shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-danger"><i class="fas fa-id-card me-2"></i>Donor Profile</h6>
+          <h4><%= donorProfile ? "Complete" : "Incomplete" %></h4>
+          <hr>
+          <a href="/donor-form" class="btn btn-sm btn-danger w-100">
+            <i class="fas fa-<%= donorProfile ? 'sync' : 'plus' %> me-2"></i>
+            <%= donorProfile ? 'Update Profile' : 'Create Profile' %>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-4">
+      <div class="card border-danger shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-danger"><i class="fas fa-tint me-2"></i>Blood Group</h6>
+          <h4><%= donorProfile ? donorProfile.blood_group : "Not Set" %></h4>
+          <hr>
+          <% if (donorProfile) { %>
+            <small class="text-muted">
+              <% if (donorProfile.available) { %>
+                <i class="fas fa-check-circle text-success me-2"></i>Available to donate
+              <% } else { %>
+                <i class="fas fa-times-circle text-warning me-2"></i>Not available for donation
+              <% } %>
+            </small>
+          <% } else { %>
+            <small class="text-muted">
+              <i class="fas fa-info-circle me-2"></i>Update your profile to show blood group and availability
+            </small>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <% if (donorProfile) { %>
+    <div class="card border-danger shadow-sm">
+      <div class="card-header bg-danger text-white">
+        <i class="fas fa-history me-2"></i>Recent Activity
+      </div>
+      <div class="card-body">
+        <p><i class="fas fa-sync-alt me-2"></i>Last updated: <%= new Date(donorProfile.updated_at).toLocaleDateString() %></p>
+        <p><i class="fas fa-map-marker-alt me-2"></i>Location: <%= donorProfile.city %></p>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<%- include('./partials/footer') %>

@@ -32,9 +32,13 @@ app.use(methodOverride('_method'));
 
 const sharedSession = require("express-socket.io-session");
 const sessionMiddleware = session({
-  secret: 'your-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    secure: true, // Only over HTTPS
+    maxAge: 1000 * 60 * 60 * 24 // 1 day
+  }
 });
 
 app.use(sessionMiddleware);

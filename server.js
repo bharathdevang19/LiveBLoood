@@ -10,6 +10,11 @@ const { pool } = require('./config/db'); // moved to top
 require('dotenv').config();
 
 const app = express();
+
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1); 
+}
+
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
   cors: {
@@ -36,9 +41,12 @@ const sessionMiddleware = session({
   resave: false,
   saveUninitialized: false,
   cookie: {
+  httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 1000 * 60 * 60 * 24
-  }
+}
+
 });
 
 app.use(sessionMiddleware);

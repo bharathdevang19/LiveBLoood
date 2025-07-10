@@ -82,7 +82,7 @@ router.post('/login',
   passport.authenticate('local', {
     successRedirect: '/dashboard',
     failureRedirect: '/login',
-    failureFlash: true,
+    failureFlash: 'invalid credentials',
     successFlash: 'You are now logged in.'
   })
 );

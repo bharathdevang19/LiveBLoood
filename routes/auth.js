@@ -80,6 +80,7 @@ router.get('/login', (req, res) => {
 // Login Handler - POST
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', function(err, user, info) {
+    console.log('Auth result:', { err, user, info });
     if (err) return next(err);
     if (!user) {
       req.flash('error_msg', info.message || 'Invalid credentials');

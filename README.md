@@ -13,8 +13,6 @@ A full-stack Node.js application for managing and tracking blood donations and r
   - Sessions handled with `express-session` and stored in PostgreSQL
 - 🌐 **Real-time Updates**
   - Blood donation requests and status updates with **Socket.io**
-- ✉️ **Email Integration**
-  - OTP-based email verification via **Nodemailer**
 - 🎨 **EJS Templating**
   - Clean, dynamic HTML views using EJS
 - 🧾 **Form Handling & Flash Messages**
@@ -27,11 +25,10 @@ A full-stack Node.js application for managing and tracking blood donations and r
 | Category      | Tech                                |
 |---------------|-------------------------------------|
 | Backend       | Node.js, Express.js                 |
-| Auth          | Passport.js, OAuth2 (Google, FB)    |
+| Auth          | Passport.js, OAuth2 (Google)        |
 | Real-time     | Socket.io                           |
 | View Engine   | EJS                                 |
-| Database      | PostgreSQL                          |
-| Email Service | Nodemailer + OTP Generator          |
+| Database      | PostgreSQL                          |       
 | Environment   | dotenv                              |
 
 ---
